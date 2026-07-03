@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Millionaire Mathematics - KSSR</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================================================
+           1. CSS VARIABLES & THEME (Premium Glassmorphism, Gold, Neon Violet)
+           ========================================================================== */
+        :root {
+            --bg-primary: #0f0c1b;
+            --bg-secondary: #1a103c;
+            --panel-glass: rgba(25, 16, 58, 0.65);
+            --border-glass: rgba(255, 215, 0, 0.25);
+            --text-light: #f5f3ff;
+            --gold: #ffd700;
+            --gold-glow: #ffae00;
+            --neon-blue: #00f0ff;
+            --neon-pink: #ff007f;
+            --correct-green: #39ff14;
+            --wrong-red: #ff3131;
+            --font-main: 'Poppins', sans-serif;
+            --font-fun: 'Fredoka', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: radial-gradient(circle at center, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            color: var(--text-light);
+            height: 100vh;
+            height: -webkit-fill-available;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        /* Ambient Spotlights */
+        .spotlight {
+            position: absolute;
+            width: 40vw;
+            height: 40vw;
+            background: radial-gradient(circle, rgba(147, 51, 234, 0.15) 0%, rgba(0,0,0,0) 70%);
+            top: -10%;
+            left: 10%;
+            z-index: 0;
+            pointer-events: none;
+            animation: floatLight 12s ease-in-out infinite alternate;
+        }
+        .spotlight:nth-child(2) {
+            left: auto;
+            right: 10%;
+            top: 50%;
+            background: radial-gradient(circle, rgba(0, 240, 255, 0.1) 0%, rgba(0,0,0,0) 70%);
+            animation: floatLight 15s ease-in-out infinite alternate-reverse;
+        }
+
+        @keyframes floatLight {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(5%, 10%) scale(1.2); }
+        }
+
+        /* Main Container */
+        #app-container {
+            width: 100%;
+            max-width: 1280px;
+            height: 100%;
+            background: var(--panel-glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 2px solid var(--border-glass);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255,255,255,0.1);
+            z-index: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            overflow-y: auto;
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Utility Components */
+        .btn-premium {
+            font-family: var(--font-fun);
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #4c1d95 0%, #2e1065 100%);
+            border: 2px solid var(--gold);
+            color: white;
+            border-radius: 16px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-premium:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+            background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
+        }
+
+        .btn-premium:active {
+            transform: translateY(1px);
+        }
+
+        /* ==========================================================================
+           2. WELCOME / AUTH SCREEN
+           ========================================================================== */
+        #screen-welcome {
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        .game-title {
+            font-family: var(--font-fun);
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(to bottom, #ffffff 30%, var(--gold) 70%, var(--gold-glow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6));
+            animation: pulseTitle 2s ease-in-out infinite alternate;
+            letter-spacing: 2px;
+            line-height: 1.2;
+        }
+
+        @keyframes pulseTitle {
+            0% { transform: scale(1); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6)); }
+            100% { transform: scale(1.02); filter: drop-shadow(0 0 20px rgba(255,215,0,0.4)); }
+        }
+
+        .auth-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 24px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+        }
+
+        .input-premium {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.3);
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 16px;
+            outline: none;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .input-premium:focus {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+        }
+
+        .avatar-selector {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .avatar-opt {
+            font-size: 1.8rem;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            background: rgba(255,255,255,0.05);
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar-opt.selected {
+            border-color: var(--gold);
+            background: rgba(255,215,0,0.2);
+            transform: scale(1.1);
+            box-shadow: 0 0 15px var(--gold);
+        }
+
+        /* ==========================================================================
+           3. GAMEPLAY SCREEN (Main Dashboard, Layout Split)
+           ========================================================================== */
+        #screen-gameplay {
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 15px;
+            overflow: hidden; /* Lock content in mobile view */
+        }
+
+        .main-game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 100%;
+            justify-content: space-between;
+        }
+
+        /* Top Bar Status */
+        .game-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.25);
+            padding: 10px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            gap: 10px;
+        }
+
+        .profile-hub {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .player-avatar-badge {
+            font-size: 1.6rem;
+            background: var(--gold);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .player-name-text {
+            font-weight: 600;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 90px;
+        }
+
+        .score-badge {
+            color: var(--gold);
+            font-size: 0.8rem;
+        }
+
+        /* Timer Circle Component */
+        .timer-wrapper {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
+        }
+
+        .timer-svg {
+            transform: rotate(-90deg);
+            width: 50px;
+            height: 50px;
+        }
+
+        .timer-svg circle {
+            fill: none;
+            stroke-width: 5;
+        }
+
+        .timer-bg {
+            stroke: rgba(255,255,255,0.1);
+        }
+
+        .timer-progress {
+            stroke: var(--neon-blue);
+            stroke-dasharray: 138.2; /* 2 * PI * r(22) */
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear, stroke 0.3s;
+            stroke-linecap: round;
+        }
+
+        .timer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: var(--font-fun);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--neon-blue);
+        }
+
+        /* Lifelines Hub */
+        .lifelines-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-lifeline {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--neon-blue);
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--neon-blue);
+            font-weight: bold;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
+            flex-shrink: 0;
+        }
+
+        .btn-lifeline:hover:not(:disabled) {
+            background: var(--neon-blue);
+            color: #000;
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+
+        .btn-lifeline:disabled {
+            border-color: #4b5563;
+            background: rgba(0,0,0,0.4);
+            color: #4b5563;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        /* Horizontal Mini Ladder for Mobile View */
+        .mobile-ladder-bar {
+            display: none;
+            background: rgba(0,0,0,0.4);
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .mobile-ladder-bar .current-amt {
+            color: var(--gold);
+        }
+        .mobile-ladder-bar .next-milestone {
+            color: var(--neon-blue);
+            font-size: 0.75rem;
+            display: block;
+        }
+
+        /* Question Card & Dynamic Diagram Container */
+        .question-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            gap: 15px;
+            position: relative;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.2);
+            min-height: 140px;
+        }
+
+        .boss-alert-banner {
+            display: none;
+            position: absolute;
+            top: -10px;
+            background: linear-gradient(90deg, var(--neon-pink), #9333ea);
+            padding: 4px 15px;
+            border-radius: 20px;
+            font-family: var(--font-fun);
+            font-size: 0.75rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px var(--neon-pink);
+            animation: pulse 1s infinite alternate;
+            z-index: 2;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); } to { transform: scale(1.05); }
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            line-height: 1.4;
+            max-width: 95%;
+            overflow-y: auto;
+        }
+
+        .dynamic-diagram-box {
+            width: 100%;
+            max-width: 240px;
+            height: 110px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 8px;
+            border: 1px dashed rgba(255,255,255,0.1);
+        }
+        
+        .dynamic-diagram-box svg {
+            max-height: 100%;
+            max-width: 100%;
+        }
+
+        /* Options Grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: linear-gradient(90deg, rgba(30,20,70,0.8) 0%, rgba(20,10,50,0.8) 100%);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 14px;
+            padding: 14px 18px;
+            text-align: left;
+            color: white;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(255,215,0,0.2);
+        }
+
+        .option-prefix {
+            color: var(--gold);
+            font-weight: bold;
+            font-family: var(--font-fun);
+            background: rgba(255,215,0,0.1);
+            padding: 2px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,215,0,0.3);
+        }
+
+        /* State Classes For Evaluation Animations */
+        .option-btn.checking {
+            animation: flashOrange 0.4s ease-in-out alternate infinite;
+        }
+        @keyframes flashOrange {
+            from { border-color: orange; box-shadow: 0 0 10px orange; }
+            to { border-color: transparent; }
+        }
+
+        .option-btn.correct {
+            background: linear-gradient(90deg, #166534 0%, #14532d 100%) !important;
+            border-color: var(--correct-green) !important;
+            box-shadow: 0 0 25px var(--correct-green) !important;
+        }
+
+        .option-btn.wrong {
+            background: linear-gradient(90deg, #991b1b 0%, #7f1d1d 100%) !important;
+            border-color: var(--wrong-red) !important;
+            box-shadow: 0 0 25px var(--wrong-red) !important;
+        }
+
+        /* Sidebar: Money Ladder / Prize Pyramid */
+        .sidebar-ladder {
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            overflow-y: hidden;
+        }
+
+        .ladder-title {
+            text-align: center;
+            font-family: var(--font-fun);
+            color: var(--gold);
+            font-size: 1rem;
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 6px;
+        }
+
+        .money-ladder-list {
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 2px;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .ladder-step {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .ladder-step.milestone {
+            color: var(--neon-blue);
+        }
+
+        .ladder-step.active {
+            background: linear-gradient(90deg, #ffd700 0%, transparent 100%);
+            color: #000 !important;
+            font-weight: bold;
+            box-shadow: 0 0 10px var(--gold);
+        }
+
+        .ladder-step.cleared {
+            color: var(--gold);
+        }
+
+        /* Streak Notification Modal Overlay */
+        .streak-overlay {
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            opacity: 0;
+            background: linear-gradient(135deg, rgba(255,174,0,0.95), rgba(255,0,127,0.95));
+            padding: 10px 30px;
+            border-radius: 40px;
+            box-shadow: 0 0 30px var(--gold);
+            font-family: var(--font-fun);
+            font-size: 1.5rem;
+            color: white;
+            z-index: 100;
+            pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center;
+        }
+
+        .streak-overlay.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            top: 35%;
+        }
+
+        /* ==========================================
+           4. LEADERBOARD & MODALS 
+           ========================================== */
+        #screen-gameover {
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            max-width: 500px;
+            margin: auto;
+            overflow-y: auto;
+        }
+
+        .leaderboard-container {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .leaderboard-tabs {
+            display: flex;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.6);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .tab-btn.active {
+            background: rgba(255,255,255,0.05);
+            color: var(--gold);
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .leaderboard-rows {
+            max-height: 160px;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .leaderboard-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            font-size: 0.85rem;
+        }
+
+        /* AI / Lifeline Modal system overlay */
+        .lifeline-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .lifeline-modal-box {
+            background: var(--bg-secondary);
+            border: 2px solid var(--gold);
+            border-radius: 20px;
+            padding: 20px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(255,215,0,0.3);
+        }
+
+        /* Confetti Canvas */
+        #confetti-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            display: none;
+        }
+
+        /* ==========================================================================
+           5. RESPONSIVE MOBILE BREAKPOINTS (Optimized for Smartphone Screens)
+           ========================================================================== */
+        @media(max-width: 850px) {
+            #screen-gameplay {
+                grid-template-columns: 1fr;
+                padding: 10px;
+                gap: 10px;
+            }
+            .sidebar-ladder {
+                display: none; /* Hide standard side ladder on phones */
+            }
+            .mobile-ladder-bar {
+                display: block; /* Show quick horizontal display banner */
+            }
+            .game-top-bar {
+                padding: 8px 12px;
+            }
+            .options-grid {
+                grid-template-columns: 1fr; /* Force options vertically for easy thumb tap */
+                gap: 8px;
+            }
+            .option-btn {
+                padding: 12px 16px;
+                font-size: 0.9rem;
+            }
+            .question-card {
+                padding: 16px;
+                gap: 10px;
+            }
+            .question-text {
+                font-size: 1.05rem;
+            }
+            .game-title {
+                font-size: 2.2rem;
+            }
+            .btn-premium {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+        }
+
+        @media(max-height: 660px) {
+            /* Compact optimization for shorter aspect-ratio mobile displays */
+            .dynamic-diagram-box {
+                height: 80px;
+                max-width: 180px;
+            }
+            .question-card {
+                padding: 10px;
+            }
+            .question-text {
+                font-size: 1rem;
+            }
+            .option-btn {
+                padding: 10px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="spotlight"></div>
+    <div class="spotlight"></div>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <div id="streak-popup" class="streak-overlay">STREAK BONUS X3! 🔥</div>
+
+    <div id="lifeline-modal" class="lifeline-modal-overlay">
+        <div class="lifeline-modal-box">
+            <h3 id="lifeline-modal-title" style="font-family: var(--font-fun); color: var(--gold); font-size: 1.4rem; margin-bottom: 12px;">Bantuan Guru</h3>
+            <div id="lifeline-modal-body" style="font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px;">...</div>
+            <button class="btn-premium" onclick="closeLifelineModal()">Faham, Terima Kasih!</button>
+        </div>
+    </div>
+
+    <div id="app-container">
+
+        <section id="screen-welcome" class="screen active">
+            <h1 class="game-title">MILLIONAIRE MATHEMATICS</h1>
+            <p style="color: var(--neon-blue); font-weight: 600; font-size: 0.95rem; letter-spacing: 0.5px;">Cabaran Matematik KSSR Tahun 1 - Tahun 6</p>
+            
+            <div class="auth-box">
+                <label style="display:block; text-align:left; margin-bottom:6px; font-weight:600; font-size:0.8rem; color: rgba(255,255,255,0.7);">PILIH AVATAR ANDA</label>
+                <div class="avatar-selector">
+                    <div class="avatar-opt selected" onclick="selectAvatar(this, '🦊')">🦊</div>
+                    <div class="avatar-opt" onclick="selectAvatar(this, '🦁')">🦁</div>
+                    <div class="avatar-opt" onclick="selectAvatar(this, '🤖')">🤖</div>
+                    <div class="avatar-opt" onclick="selectAvatar(this, '🦉')">🦉</div>
+                </div>
+
+                <label style="display:block; text-align:left; margin-bottom:6px; font-weight:600; font-size:0.8rem; color: rgba(255,255,255,0.7);">NAMA HERO MATEMATIK</label>
+                <input type="text" id="player-name-input" class="input-premium" placeholder="Masukkan nama anda..." autocomplete="off" value="KSSR Genius">
+
+                <button class="btn-premium" style="width: 100%;" onclick="startAnonymousSession()">Sertai Kejohanan 🚀</button>
+            </div>
+        </section>
+
+        <section id="screen-gameplay" class="screen">
+            <div class="main-game-area">
+                
+                <div class="game-top-bar">
+                    <div class="profile-hub">
+                        <div id="display-avatar" class="player-avatar-badge">🦊</div>
+                        <div>
+                            <div id="display-name" class="player-name-text">Pemain</div>
+                            <div id="display-score" class="score-badge">Skor: 0</div>
+                        </div>
+                    </div>
+
+                    <div class="lifelines-container">
+                        <button id="lf-5050" class="btn-lifeline" title="50:50" onclick="trigger5050()">50:50</button>
+                        <button id="lf-guru" class="btn-lifeline" title="Tanya Guru" onclick="triggerTanyaGuru()">👨‍🏫</button>
+                        <button id="lf-rakan" class="btn-lifeline" title="Tanya Rakan" onclick="triggerTanyaRakan()">👥</button>
+                        <button id="lf-tukar" class="btn-lifeline" title="Tukar Soalan" onclick="triggerTukarSoalan()">🔄</button>
+                    </div>
+
+                    <div class="timer-wrapper">
+                        <svg class="timer-svg">
+                            <circle class="timer-bg" cx="25" cy="25" r="22"></circle>
+                            <circle id="timer-progress" class="timer-progress" cx="25" cy="25" r="22"></circle>
+                        </svg>
+                        <div id="timer-text" class="timer-text">30</div>
+                    </div>
+                </div>
+
+                <div class="mobile-ladder-bar">
+                    Peringkat Semasa: <span id="mobile-current-lvl" class="current-amt">RM0</span>
+                    <span id="mobile-next-milestone" class="next-milestone">Sasaran Selamat: RM1,000</span>
+                </div>
+
+                <div class="question-card">
+                    <div id="boss-alert" class="boss-alert-banner">⚡ SOALAN TRIPLE MARKAH BOSS ⚡</div>
+                    <div id="question-text" class="question-text">Memuatkan cabaran soalan premium matematik...</div>
+                    
+                    <div id="diagram-space" class="dynamic-diagram-box"></div>
+                </div>
+
+                <div class="options-grid">
+                    <button class="option-btn" id="optA" onclick="selectOption('A')"><span class="option-prefix">A</span> <span id="textOptA">...</span></button>
+                    <button class="option-btn" id="optB" onclick="selectOption('B')"><span class="option-prefix">B</span> <span id="textOptB">...</span></button>
+                    <button class="option-btn" id="optC" onclick="selectOption('C')"><span class="option-prefix">C</span> <span id="textOptC">...</span></button>
+                    <button class="option-btn" id="optD" onclick="selectOption('D')"><span class="option-prefix">D</span> <span id="textOptD">...</span></button>
+                </div>
+
+            </div>
+
+            <div class="sidebar-ladder">
+                <div class="ladder-title">Tangga Hadiah</div>
+                <div class="money-ladder-list" id="money-ladder-container"></div>
+            </div>
+        </section>
+
+        <section id="screen-gameover" class="screen">
+            <h2 id="end-title" style="font-family: var(--font-fun); font-size: 2.2rem; color: var(--gold);">Permainan Tamat!</h2>
+            <p id="end-subtitle" style="font-size: 1rem; color: var(--neon-blue);">Tahniah atas usaha terbaik anda!</p>
+            
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 16px; width: 100%;">
+                <h4 style="color: var(--gold); text-transform: uppercase; font-size: 0.8rem; margin-bottom: 8px; letter-spacing: 1px;">Prestasi Sesi Ini</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center;">
+                    <div style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px;">
+                        <span style="font-size: 0.75rem; display:block; color:rgba(255,255,255,0.5);">Hadiah</span>
+                        <strong id="stat-money" style="font-size: 1.1rem; color: var(--gold);">RM0</strong>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px;">
+                        <span style="font-size: 0.75rem; display:block; color:rgba(255,255,255,0.5);">Skor</span>
+                        <strong id="stat-score" style="font-size: 1.1rem; color: var(--neon-blue);">0</strong>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px;">
+                        <span style="font-size: 0.75rem; display:block; color:rgba(255,255,255,0.5);">Ketepatan</span>
+                        <strong id="stat-accuracy" style="font-size: 1.1rem; color: var(--correct-green);">0%</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="leaderboard-container">
+                <div class="leaderboard-tabs">
+                    <button class="tab-btn active" onclick="switchLeaderboardTab('alltime', this)">Sepanjang Masa</button>
+                    <button class="tab-btn" onclick="switchLeaderboardTab('weekly', this)">Mingguan</button>
+                    <button class="tab-btn" onclick="switchLeaderboardTab('daily', this)">Hari Ini</button>
+                </div>
+                <div class="leaderboard-rows" id="leaderboard-rows-target"></div>
+            </div>
+
+            <button class="btn-premium" style="margin-top: 5px; width: 100%;" onclick="restartGameSession()">Cuba Lagi Sesi Baharu 🔄</button>
+        </section>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDocs, query, orderBy, limit, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCcse0E4FxrSm0idMScbTty_kVUwBcWUgo",
+            authDomain: "logicmaththinking.firebaseapp.com",
+            databaseURL: "https://logicmaththinking-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "logicmaththinking",
+            storageBucket: "logicmaththinking.firebasestorage.app",
+            messagingSenderId: "330047683583",
+            appId: "1:330047683583:web:0c91c768a87865d1ca45ca"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let localPlayer = { uid: null, name: "KSSR Genius", avatar: "🦊" };
+        let currentLevelIndex = 1;
+        let totalScore = 0;
+        let streakCounter = 0;
+        let elapsedQuestionTimer = 30;
+        let timerIntervalInstance = null;
+        let allQuestionsBank = [];
+        let currentActiveQuestion = null;
+        let questionSessionHistoryIds = [];
+        let correctAnswersCount = 0;
+        let activeLifelinesUsedInSession = 0;
+
+        const prizePyramidTiers = [
+            { level: 1, amount: "RM100", milestone: false },
+            { level: 2, amount: "RM200", milestone: false },
+            { level: 3, amount: "RM300", milestone: false },
+            { level: 4, amount: "RM500", milestone: false },
+            { level: 5, amount: "RM1,000", milestone: true },
+            { level: 6, amount: "RM2,000", milestone: false },
+            { level: 7, amount: "RM4,000", milestone: false },
+            { level: 8, amount: "RM8,000", milestone: false },
+            { level: 9, amount: "RM16,000", milestone: false },
+            { level: 10, amount: "RM32,000", milestone: true },
+            { level: 11, amount: "RM64,000", milestone: false },
+            { level: 12, amount: "RM125,000", milestone: false },
+            { level: 13, amount: "RM250,000", milestone: false },
+            { level: 14, amount: "RM500,000", milestone: false },
+            { level: 15, amount: "RM1,000,000", milestone: true }
+        ];
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playTone(freq, type, duration, delay = 0) {
+            setTimeout(() => {
+                try {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = type;
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + duration);
+                } catch(e) { console.log("Audio not allowed yet"); }
+            }, delay);
+        }
+
+        const SoundFx = {
+            intro: () => { playTone(261.6, 'sine', 0.3, 0); playTone(329.6, 'sine', 0.3, 150); playTone(392.0, 'sine', 0.4, 300); },
+            click: () => playTone(440, 'triangle', 0.05),
+            correct: () => { playTone(523.3, 'sine', 0.1); playTone(659.3, 'sine', 0.1, 100); playTone(784.0, 'sine', 0.3, 200); },
+            wrong: () => { playTone(180, 'sawtooth', 0.4); playTone(120, 'sawtooth', 0.3, 150); },
+            warning: () => playTone(880, 'square', 0.05),
+            boss: () => { playTone(90, 'sawtooth', 0.6); playTone(95, 'sawtooth', 0.4, 200); },
+            winGame: () => { for(let i=0; i<5; i++) playTone(500 + (i*100), 'sine', 0.5, i*200); }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderPyramidLadderUI();
+            window.selectAvatar = selectAvatar;
+            window.startAnonymousSession = startAnonymousSession;
+            window.selectOption = selectOption;
+            window.trigger5050 = trigger5050;
+            window.triggerTanyaGuru = triggerTanyaGuru;
+            window.triggerTanyaRakan = triggerTanyaRakan;
+            window.triggerTukarSoalan = triggerTukarSoalan;
+            window.closeLifelineModal = closeLifelineModal;
+            window.switchLeaderboardTab = switchLeaderboardTab;
+            window.restartGameSession = restartGameSession;
+        });
+
+        function selectAvatar(element, avatarChar) {
+            SoundFx.click();
+            document.querySelectorAll('.avatar-opt').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            localPlayer.avatar = avatarChar;
+        }
+
+        function renderPyramidLadderUI() {
+            const container = document.getElementById('money-ladder-container');
+            container.innerHTML = '';
+            prizePyramidTiers.forEach(tier => {
+                const stepDiv = document.createElement('div');
+                stepDiv.id = `ladder-step-${tier.level}`;
+                stepDiv.className = `ladder-step ${tier.milestone ? 'milestone' : ''}`;
+                stepDiv.innerHTML = `<span>Soalan ${tier.level}</span> <span>${tier.amount}</span>`;
+                container.appendChild(stepDiv);
+            });
+        }
+
+        function updatePyramidHighlight() {
+            let activeAmt = "RM0";
+            let nextSafe = "RM1,000";
+            
+            prizePyramidTiers.forEach(tier => {
+                const el = document.getElementById(`ladder-step-${tier.level}`);
+                if(tier.level === currentLevelIndex) {
+                    if(el) el.classList.add('active');
+                    activeAmt = tier.amount;
+                } else if(tier.level < currentLevelIndex) {
+                    if(el) el.classList.add('cleared');
+                } else {
+                    if(el) el.classList.remove('active', 'cleared');
+                }
+                
+                if(tier.milestone && tier.level >= currentLevelIndex && nextSafe === "RM1,000") {
+                    nextSafe = tier.amount;
+                }
+            });
+
+            // Update mobile banner references
+            document.getElementById('mobile-current-lvl').innerText = activeAmt;
+            document.getElementById('mobile-next-milestone').innerText = `Sasaran Selamat Berikutnya: ${nextSafe}`;
+        }
+
+        async function startAnonymousSession() {
+            SoundFx.click();
+            const nameInput = document.getElementById('player-name-input').value.trim();
+            if(nameInput) localPlayer.name = nameInput;
+
+            try {
+                const userCredential = await signInAnonymously(auth);
+                localPlayer.uid = userCredential.user.uid;
+                
+                await setDoc(doc(db, "players", localPlayer.uid), {
+                    name: localPlayer.name,
+                    avatar: localPlayer.avatar,
+                    lastPlayed: serverTimestamp()
+                }, { merge: true });
+
+                document.getElementById('display-avatar').innerText = localPlayer.avatar;
+                document.getElementById('display-name').innerText = localPlayer.name;
+
+                transitionToScreen('screen-gameplay');
+                SoundFx.intro();
+
+                await bootstrapQuestionsDataset();
+                executeQuestionPipeline();
+
+            } catch (error) {
+                console.error("Firebase setup failure, falling back to local simulation mode:", error);
+                localPlayer.uid = "local-sim-id-" + Math.random().toString(36).substring(7);
+                document.getElementById('display-avatar').innerText = localPlayer.avatar;
+                document.getElementById('display-name').innerText = localPlayer.name;
+                transitionToScreen('screen-gameplay');
+                await bootstrapQuestionsDataset();
+                executeQuestionPipeline();
+            }
+        }
+
+        function transitionToScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        async function bootstrapQuestionsDataset() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "questions"));
+                allQuestionsBank = [];
+                querySnapshot.forEach((doc) => {
+                    allQuestionsBank.push({ id: doc.id, ...doc.data() });
+                });
+            } catch(e) {
+                console.log("Firestore fetch error, generating dynamic offline bank");
+            }
+
+            if(allQuestionsBank.length === 0) {
+                allQuestionsBank = generateComprehensiveMockBank();
+            }
+        }
+
+        function generateComprehensiveMockBank() {
+            const staticPool = [
+                { levelTier: 1, difficulty: "Mudah", topic: "Nilai Nombor", question: "Apakah nilai tempat bagi digit 7 dalam nombor 67?", options: ["Sa", "Puluh", "Ratus", "Ribu"], correctIndex: 0 },
+                { levelTier: 1, difficulty: "Mudah", topic: "Tambah", question: "Hitung jumlah bagi 14 + 5.", options: ["18", "19", "20", "21"], correctIndex: 1 },
+                { levelTier: 2, difficulty: "Mudah", topic: "Tolak", question: "Berapakah baki apabila 8 ditolak daripada 20?", options: ["12", "14", "10", "16"], correctIndex: 0 },
+                { levelTier: 2, difficulty: "Mudah", topic: "Wang", question: "Kira jumlah nilai wang kertas Malaysia berikut: Tiga keping wang RM10 dan dua keping RM5.", options: ["RM35", "RM45", "RM40", "RM50"], correctIndex: 2, diagramType: "wang" },
+                { levelTier: 3, difficulty: "Mudah", topic: "Masa dan Waktu", question: "Jarum pendek menunjuk ke angka 3 dan jarum panjang menunjuk ke angka 12. Pukul berapakah itu?", options: ["Pukul 12:15", "Pukul 3:00", "Pukul 12:03", "Pukul 6:15"], correctIndex: 1, diagramType: "jam" },
+                { levelTier: 3, difficulty: "Mudah", topic: "Bentuk 2D", question: "Apakah nama bentuk 2D yang mempunyai 3 sisi lurus dan 3 bucu?", options: ["Segi Tiga", "Segi Empat Tepat", "Bulatan", "Pentagon"], correctIndex: 0, diagramType: "geometri" },
+                { levelTier: 4, difficulty: "Mudah", topic: "Pecahan", question: "Satu daripada empat bahagian daripada sebiji kek dipanggil...", options: ["Separuh", "Tiga perempat", "Suku", "Satu pertiga"], correctIndex: 2 },
+                { levelTier: 4, difficulty: "Mudah", topic: "Darab", question: "Cari hasil darab bagi 4 x 5.", options: ["9", "20", "25", "15"], correctIndex: 1 },
+                { levelTier: 5, difficulty: "Mudah", topic: "Bahagi", question: "Sebanyak 18 biji guli dikongsi sama rata antara 3 orang anak. Berapakah guli yang diterima oleh setiap anak?", options: ["6 biji", "5 biji", "7 biji", "4 biji"], correctIndex: 0 },
+                { levelTier: 6, difficulty: "Sederhana", topic: "Nilai Nombor", question: "Bundarkan 4,582 kepada ratus yang terdekat.", options: ["4,500", "4,600", "4,580", "5,000"], correctIndex: 1 },
+                { levelTier: 6, difficulty: "Sederhana", topic: "Pecahan", question: "Tukarkan 7/100 kepada bentuk perpuluhan.", options: ["0.7", "0.07", "0.007", "7.0"], correctIndex: 1 },
+                { levelTier: 7, difficulty: "Sederhana", topic: "Wang", question: "Encik Ali membeli sebuah basikal berharga RM350. Dia membayar dengan 4 keping wang RM100. Berapakah wang bakinya?", options: ["RM50", "RM60", "RM40", "RM70"], correctIndex: 0 },
+                { levelTier: 7, difficulty: "Sederhana", topic: "Masa dan Waktu", question: "Tukarkan pukul 8:45 malam kepada sistem 24 jam.", options: ["Jam 0845", "Jam 2045", "Jam 1845", "Jam 2245"], correctIndex: 1 },
+                { levelTier: 8, difficulty: "Sederhana", topic: "Panjang", question: "Sebatang reben berukuran 2 m 50 cm. Berapakah panjang reben itu dalam cm?", options: ["25 cm", "205 cm", "250 cm", "2500 cm"], correctIndex: 2 },
+                { levelTier: 8, difficulty: "Sederhana", topic: "Jisim", question: "Siti membeli 3 kg tepung. Dia menggunakan 1,200 g tepung untuk membuat kek. Berapakah baki jisim tepung dalam gram?", options: ["1,800 g", "1,500 g", "2,800 g", "1,200 g"], correctIndex: 0 },
+                { levelTier: 9, difficulty: "Sederhana", topic: "Isi Padu Cecair", question: "Sebuah botol mengandungi 1.5 liter air. Berapakah isi padu air itu dalam mililiter (mℓ)?", options: ["150 mℓ", "1,500 mℓ", "15,000 mℓ", "15 mℓ"], correctIndex: 1 },
+                { levelTier: 9, difficulty: "Sederhana", topic: "Ruang", question: "Kira perimeter bagi sebuah segi empat sama yang mempunyai panjang sisi 6 cm.", options: ["36 cm", "12 cm", "24 cm", "18 cm"], correctIndex: 2 },
+                { levelTier: 10, difficulty: "Sederhana", topic: "Data", question: "Dalam sebuah carta pai, 25% mewakili murid yang suka warna biru. Jika jumlah murid ialah 40 orang, berapakah bilangan murid yang suka warna biru?", options: ["10 orang", "5 orang", "15 orang", "20 orang"], correctIndex: 0 },
+                { levelTier: 11, difficulty: "Sukar", topic: "Peratus", question: "Sebuah kedai memberi diskaun 20% bagi sepasang kasut yang berharga RM150. Berapakah harga kasut itu selepas diskaun?", options: ["RM130", "RM120", "RM30", "RM100"], correctIndex: 1 },
+                { levelTier: 11, difficulty: "Sukar", topic: "Nombor Perdana", question: "Antara nombor berikut, yang manakah merupakan nombor perdana?", options: ["21", "27", "29", "33"], correctIndex: 2 },
+                { levelTier: 12, difficulty: "Sukar", topic: "Pecahan", question: "Hitung nilai bagi 2/3 daripada 240.", options: ["160", "80", "120", "180"], correctIndex: 0 },
+                { levelTier: 12, difficulty: "Sukar", topic: "Masa dan Waktu", question: "Sebuah bas bertolak dari Johor Bahru pada jam 2130 dan tiba di Kuala Lumpur pada jam 0215 hari keesokannya. Berapakah tempoh perjalanan bas itu?", options: ["4 jam 45 minit", "5 jam 15 minit", "4 jam 15 minit", "5 jam 45 minit"], correctIndex: 0 },
+                { levelTier: 13, difficulty: "Sukar", topic: "Ruang", question: "Sebuah kubus mempunyai panjang sisi 5 cm. Berapakah isi padu kubus tersebut?", options: ["25 cm³", "100 cm³", "125 cm³", "150 cm³"], correctIndex: 2 },
+                { levelTier: 13, difficulty: "Sukar", topic: "Kadar", question: "Sebuah kereta bergerak sejauh 90 km menggunakan 6 liter petrol. Berapakah jarak yang boleh dilalui dengan 10 liter petrol?", options: ["150 km", "130 km", "160 km", "140 km"], correctIndex: 0 },
+                { levelTier: 14, difficulty: "Sukar", topic: "Purata", question: "Purata markah bagi 4 orang murid dalam ujian Matematik ialah 75. Apabila markah Raju ditambah, purata markah menjadi 78. Berapakah markah Raju?", options: ["90", "85", "88", "92"], correctIndex: 0 },
+                { levelTier: 14, difficulty: "Sukar", topic: "Kebarangkalian", question: "Sebuah kotak mengandungi 5 guli merah dan 15 guli hijau. Jika sebiji guli dicabut secara rawak, apakah kebarangkalian mendapat guli merah?", options: ["1/4", "1/3", "3/4", "1/2"], correctIndex: 0 },
+                { levelTier: 15, difficulty: "Sukar", topic: "KBAT", question: "Nisbah wang simpanan Amin kepada wang simpanan Husin ialah 3 : 5. Jumlah wang simpanan mereka ialah RM1,200. Berapakah wang simpanan Husin?", options: ["RM450", "RM750", "RM600", "RM800"], correctIndex: 1 }
+            ];
+
+            const formattedBank = [];
+            staticPool.forEach((q, index) => {
+                const correctText = q.options[q.correctIndex];
+                const scrambledOpts = [...q.options].sort(() => Math.random() - 0.5);
+                const finalCorrectLetter = ['A', 'B', 'C', 'D'][scrambledOpts.indexOf(correctText)];
+
+                formattedBank.push({
+                    id: `kssr-q-${q.levelTier}-${index}`,
+                    levelTier: q.levelTier,
+                    difficulty: q.difficulty,
+                    topic: q.topic,
+                    question: `[${q.topic}] ${q.question}`,
+                    optionA: scrambledOpts[0],
+                    optionB: scrambledOpts[1],
+                    optionC: scrambledOpts[2],
+                    optionD: scrambledOpts[3],
+                    correctAnswer: finalCorrectLetter,
+                    diagramType: q.diagramType || "text"
+                });
+            });
+
+            return formattedBank;
+        }
+
+        function executeQuestionPipeline() {
+            resetOptionsButtonVisuals();
+            updatePyramidHighlight();
+
+            let availablePool = allQuestionsBank.filter(q => q.levelTier === currentLevelIndex && !questionSessionHistoryIds.includes(q.id));
+            
+            if(availablePool.length === 0) {
+                let targetDiff = "Mudah";
+                if(currentLevelIndex > 5 && currentLevelIndex <= 10) targetDiff = "Sederhana";
+                if(currentLevelIndex > 10) targetDiff = "Sukar";
+                availablePool = allQuestionsBank.filter(q => q.difficulty === targetDiff && !questionSessionHistoryIds.includes(q.id));
+            }
+
+            if(availablePool.length === 0) {
+                triggerGrandWinEnding();
+                return;
+            }
+
+            currentActiveQuestion = availablePool[Math.floor(Math.random() * availablePool.length)];
+            questionSessionHistoryIds.push(currentActiveQuestion.id);
+
+            document.getElementById('question-text').innerText = currentActiveQuestion.question;
+            document.getElementById('textOptA').innerText = currentActiveQuestion.optionA;
+            document.getElementById('textOptB').innerText = currentActiveQuestion.optionB;
+            document.getElementById('textOptC').innerText = currentActiveQuestion.optionC;
+            document.getElementById('textOptD').innerText = currentActiveQuestion.optionD;
+
+            const isBossLvl = (currentLevelIndex === 5 || currentLevelIndex === 10 || currentLevelIndex === 15);
+            if(isBossLvl) {
+                document.getElementById('boss-alert').style.display = 'block';
+                SoundFx.boss();
+            } else {
+                document.getElementById('boss-alert').style.display = 'none';
+            }
+
+            renderDynamicDiagramSVG(currentActiveQuestion.diagramType);
+
+            elapsedQuestionTimer = 30;
+            executeCountdownIntervalTracker();
+        }
+
+        function resetOptionsButtonVisuals() {
+            ['A','B','C','D'].forEach(letter => {
+                const btn = document.getElementById(`opt${letter}`);
+                btn.className = "option-btn";
+                btn.disabled = false;
+            });
+        }
+
+        function renderDynamicDiagramSVG(type) {
+            const container = document.getElementById('diagram-space');
+            container.innerHTML = '';
+
+            let svgMarkup = ``;
+            if(type === 'wang') {
+                svgMarkup = `
+                <svg width="150" height="75" viewBox="0 0 180 90">
+                    <rect x="5" y="5" width="160" height="80" rx="6" fill="#1e3a8a" stroke="#ffd700" stroke-width="2"/>
+                    <circle cx="85" cy="45" r="22" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)"/>
+                    <text x="85" y="52" fill="#ffd700" font-family="Fredoka" font-size="20" font-weight="bold" text-anchor="middle">RM50</text>
+                </svg>`;
+            } else if(type === 'jam') {
+                svgMarkup = `
+                <svg width="90" height="90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="#1e1b4b" stroke="#00f0ff" stroke-width="3"/>
+                    <text x="50" y="15" fill="white" font-size="8" text-anchor="middle">12</text>
+                    <text x="85" y="53" fill="white" font-size="8" text-anchor="middle">3</text>
+                    <text x="50" y="92" fill="white" font-size="8" text-anchor="middle">6</text>
+                    <text x="15" y="53" fill="white" font-size="8" text-anchor="middle">9</text>
+                    <line x1="50" y1="50" x2="50" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="50" y1="50" x2="72" y2="50" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/>
+                </svg>`;
+            } else if(type === 'geometri') {
+                svgMarkup = `
+                <svg width="90" height="90" viewBox="0 0 100 100">
+                    <polygon points="50,15 15,80 85,80" fill="rgba(255, 0, 127, 0.2)" stroke="#ff007f" stroke-width="3"/>
+                </svg>`;
+            } else {
+                svgMarkup = `
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                </svg>`;
+            }
+            container.innerHTML = svgMarkup;
+        }
+
+        function executeCountdownIntervalTracker() {
+            clearInterval(timerIntervalInstance);
+            const progressBar = document.getElementById('timer-progress');
+            const timerText = document.getElementById('timer-text');
+            
+            progressBar.style.stroke = "var(--neon-blue)";
+            timerText.style.color = "var(--neon-blue)";
+
+            timerIntervalInstance = setInterval(() => {
+                elapsedQuestionTimer--;
+                timerText.innerText = elapsedQuestionTimer;
+
+                const radius = 22;
+                const circumference = 2 * Math.PI * radius;
+                const offset = circumference - (elapsedQuestionTimer / 30) * circumference;
+                progressBar.style.strokeDashoffset = offset;
+
+                if(elapsedQuestionTimer <= 10) {
+                    progressBar.style.stroke = "var(--wrong-red)";
+                    timerText.style.color = "var(--wrong-red)";
+                    SoundFx.warning();
+                }
+
+                if(elapsedQuestionTimer <= 0) {
+                    clearInterval(timerIntervalInstance);
+                    handleAnswerSelectionProcessing(null, true);
+                }
+            }, 1000);
+        }
+
+        async function selectOption(pickedLetter) {
+            ['A','B','C','D'].forEach(l => document.getElementById(`opt${l}`).disabled = true);
+            clearInterval(timerIntervalInstance);
+
+            const chosenBtn = document.getElementById(`opt${pickedLetter}`);
+            chosenBtn.classList.add('checking');
+
+            setTimeout(() => {
+                chosenBtn.classList.remove('checking');
+                handleAnswerSelectionProcessing(pickedLetter, false);
+            }, 1200);
+        }
+
+        function handleAnswerSelectionProcessing(pickedLetter, isTimeout = false) {
+            const correctAnswer = currentActiveQuestion.correctAnswer;
+            
+            if(!isTimeout && pickedLetter === correctAnswer) {
+                SoundFx.correct();
+                document.getElementById(`opt${pickedLetter}`).classList.add('correct');
+                
+                correctAnswersCount++;
+                streakCounter++;
+
+                let scoreMultiplier = (currentLevelIndex === 5 || currentLevelIndex === 10 || currentLevelIndex === 15) ? 3 : 1;
+                let calculatedGain = (100 * currentLevelIndex + elapsedQuestionTimer * 10) * scoreMultiplier;
+                totalScore += calculatedGain;
+                document.getElementById('display-score').innerText = `Skor: ${totalScore}`;
+
+                evaluateStreakMilestoneAnimations();
+
+                setTimeout(() => {
+                    if(currentLevelIndex === 15) {
+                        triggerGrandWinEnding();
+                    } else {
+                        currentLevelIndex++;
+                        executeQuestionPipeline();
+                    }
+                }, 1500);
+
+            } else {
+                SoundFx.wrong();
+                if(!isTimeout && pickedLetter) {
+                    document.getElementById(`opt${pickedLetter}`).classList.add('wrong');
+                }
+                document.getElementById(`opt${correctAnswer}`).classList.add('correct');
+                streakCounter = 0;
+
+                setTimeout(() => {
+                    terminateGameSessionPipeline(false);
+                }, 2000);
+            }
+        }
+
+        function evaluateStreakMilestoneAnimations() {
+            if([3, 5, 10].includes(streakCounter)) {
+                const popup = document.getElementById('streak-popup');
+                popup.innerText = `STREAK BONUS X${streakCounter}! 🔥`;
+                popup.classList.add('show');
+                setTimeout(() => popup.classList.remove('show'), 2000);
+            }
+        }
+
+        function trigger5050() {
+            activeLifelinesUsedInSession++;
+            SoundFx.click();
+            document.getElementById('lf-5050').disabled = true;
+            const correct = currentActiveQuestion.correctAnswer;
+            
+            let incorrectPool = ['A','B','C','D'].filter(l => l !== correct);
+            incorrectPool.sort(() => Math.random() - 0.5);
+            document.getElementById(`opt${incorrectPool[0]}`).disabled = true;
+            document.getElementById(`textOpt${incorrectPool[0]}`).innerText = "---";
+            document.getElementById(`opt${incorrectPool[1]}`).disabled = true;
+            document.getElementById(`textOpt${incorrectPool[1]}`).innerText = "---";
+        }
+
+        function triggerTanyaGuru() {
+            activeLifelinesUsedInSession++;
+            SoundFx.click();
+            document.getElementById('lf-guru').disabled = true;
+            
+            const correct = currentActiveQuestion.correctAnswer;
+            const conf = Math.floor(Math.random() * 20) + 75;
+
+            openLifelineModal("Bantuan Guru Cemerlang 👨‍🏫", `Cikgu sangat yakin jawapan yang tepat bagi formula sub-topik ini ialah pilihan <strong>${correct}</strong> dengan tahap keyakinan pengiraan sebanyak ${conf}%.`);
+        }
+
+        function triggerTanyaRakan() {
+            activeLifelinesUsedInSession++;
+            SoundFx.click();
+            document.getElementById('lf-rakan').disabled = true;
+
+            const correct = currentActiveQuestion.correctAnswer;
+            let breakdownText = "";
+            ['A','B','C','D'].forEach(l => {
+                let pct = l === correct ? Math.floor(Math.random()*30)+50 : Math.floor(Math.random()*15);
+                breakdownText += `<br>Pilihan ${l} : ${pct}% undian rakan sekelas`;
+            });
+
+            openLifelineModal("Undian Rakan Sekelas KSSR 👥", `Berikut ialah peratusan hasil perbincangan rakan sekelas anda: ${breakdownText}`);
+        }
+
+        function triggerTukarSoalan() {
+            activeLifelinesUsedInSession++;
+            SoundFx.click();
+            document.getElementById('lf-tukar').disabled = true;
+            executeQuestionPipeline();
+        }
+
+        function openLifelineModal(title, body) {
+            document.getElementById('lifeline-modal-title').innerHTML = title;
+            document.getElementById('lifeline-modal-body').innerHTML = body;
+            document.getElementById('lifeline-modal').style.display = 'flex';
+        }
+
+        function closeLifelineModal() {
+            SoundFx.click();
+            document.getElementById('lifeline-modal').style.display = 'none';
+        }
+
+        function triggerGrandWinEnding() {
+            SoundFx.winGame();
+            initiateConfettiCanvasAnimation();
+            document.getElementById('end-title').innerText = "🏆 MILLIONAIRE CHAMPION! 🏆";
+            document.getElementById('end-subtitle').innerText = "Luar biasa! Anda berjaya menakluki kesemua 15 peringkat Matematik KSSR!";
+            terminateGameSessionPipeline(true);
+        }
+
+        async function terminateGameSessionPipeline(isUltimateWin = false) {
+            clearInterval(timerIntervalInstance);
+            
+            let finalCashWon = "RM0";
+            if(isUltimateWin) {
+                finalCashWon = "RM1,000,000";
+            } else {
+                if(currentLevelIndex > 10) finalCashWon = "RM32,000";
+                else if(currentLevelIndex > 5) finalCashWon = "RM1,000";
+                else finalCashWon = "RM0";
+            }
+
+            document.getElementById('stat-money').innerText = finalCashWon;
+            document.getElementById('stat-score').innerText = totalScore;
+            const accuracy = questionSessionHistoryIds.length > 0 ? Math.round((correctAnswersCount / questionSessionHistoryIds.length) * 100) : 0;
+            document.getElementById('stat-accuracy').innerText = `${accuracy}%`;
+
+            transitionToScreen('screen-gameover');
+
+            const structuralRecordPayload = {
+                score: totalScore,
+                name: localPlayer.name,
+                avatar: localPlayer.avatar,
+                cashReward: finalCashWon,
+                accuracy: accuracy,
+                timestamp: serverTimestamp(),
+                dateString: new Date().toISOString().split('T')[0]
+            };
+
+            try {
+                if(localPlayer.uid) {
+                    await setDoc(doc(collection(db, "leaderboard")), structuralRecordPayload);
+                }
+            } catch(e) { console.log("Leaderboard remote indexing error: ", e); }
+
+            fetchLeaderboardRemoteMetrics("alltime");
+        }
+
+        async function fetchLeaderboardRemoteMetrics(filterScope) {
+            const container = document.getElementById('leaderboard-rows-target');
+            container.innerHTML = `<div style="text-align:center; padding: 20px; color:var(--neon-blue);">Memuatkan data ranking...</div>`;
+
+            try {
+                let baseQuery = collection(db, "leaderboard");
+                let qInstance = query(baseQuery, orderBy("score", "desc"), limit(10));
+
+                if(filterScope === 'daily') {
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    qInstance = query(baseQuery, where("dateString", "==", todayStr), orderBy("score", "desc"), limit(10));
+                }
+
+                const snap = await getDocs(qInstance);
+                container.innerHTML = '';
+
+                let counter = 1;
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    const row = document.createElement('div');
+                    row.className = "leaderboard-row";
+                    row.innerHTML = `<span>${counter}. ${d.avatar || '🦊'} ${d.name || 'Anonymous'}</span> <strong>${d.score} Pts</strong>`;
+                    container.appendChild(row);
+                    counter++;
+                });
+
+                if(counter === 1) {
+                    container.innerHTML = `<div style="text-align:center; padding:20px; color:rgba(255,255,255,0.4);">Tiada rekod data.</div>`;
+                }
+
+            } catch (error) {
+                container.innerHTML = '';
+                for(let i=1; i<=5; i++) {
+                    const row = document.createElement('div');
+                    row.className = "leaderboard-row";
+                    row.innerHTML = `<span>${i}. 🤖 Bijak SJKC ${i}</span> <strong>${2500 - (i*400)} Pts</strong>`;
+                    container.appendChild(row);
+                }
+            }
+        }
+
+        function switchLeaderboardTab(scope, btnElement) {
+            SoundFx.click();
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            fetchLeaderboardRemoteMetrics(scope);
+        }
+
+        function restartGameSession() {
+            SoundFx.click();
+            currentLevelIndex = 1;
+            totalScore = 0;
+            streakCounter = 0;
+            correctAnswersCount = 0;
+            questionSessionHistoryIds = [];
+            activeLifelinesUsedInSession = 0;
+
+            ['lf-5050', 'lf-guru', 'lf-rakan', 'lf-tukar'].forEach(id => document.getElementById(id).disabled = false);
+            document.getElementById('display-score').innerText = "Skor: 0";
+            document.getElementById('confetti-canvas').style.display = 'none';
+
+            transitionToScreen('screen-gameplay');
+            executeQuestionPipeline();
+        }
+
+        function initiateConfettiCanvasAnimation() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.style.display = 'block';
+            
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+            
+            const particles = [];
+            for (let i = 0; i < 120; i++) {
+                particles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height - height,
+                    r: Math.random() * 6 + 4,
+                    d: Math.random() * width,
+                    color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+                    tilt: Math.random() * 10 - 5
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, width, height);
+                particles.forEach((p, idx) => {
+                    ctx.beginPath();
+                    ctx.lineWidth = p.r;
+                    ctx.strokeStyle = p.color;
+                    ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+                    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+                    ctx.stroke();
+
+                    p.y += Math.cos(p.d) + 1 + p.r / 2;
+                    p.x += Math.sin(p.d);
+                    p.tilt = Math.sin(p.d - idx) * 3;
+
+                    if (p.y > height) {
+                        particles[idx] = p;
+                        p.y = -20;
+                        p.x = Math.random() * width;
+                    }
+                });
+                if(document.getElementById('confetti-canvas').style.display === 'block') {
+                    requestAnimationFrame(draw);
+                }
+            }
+            draw();
+        }
+    </script>
+</body>
+</html>
